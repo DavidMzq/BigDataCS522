@@ -71,6 +71,7 @@ public class RelativeFrequencyPair {
 		}
 	}
 
+	
 	public static class RelativeFrequencyPairReducer extends
 			Reducer<Pair, IntWritable, Pair, DoubleWritable> {
 		
@@ -110,7 +111,6 @@ public class RelativeFrequencyPair {
 	}
 
 
-
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf, "word count");
@@ -118,17 +118,13 @@ public class RelativeFrequencyPair {
 		job.setJarByClass(RelativeFrequencyPair.class);
 
 		FileInputFormat.addInputPath(job, new Path(
-				"/home/cloudera/workspace/RelativeFrequencies_Pairs/src.txt"));
+				"/home/cloudera/workspace/RelativeFrequenciesPairs/src.txt"));
 		FileOutputFormat.setOutputPath(job, new Path(
-				"/home/cloudera/workspace/RelativeFrequencies_Pairs/output"));
+				"/home/cloudera/workspace/RelativeFrequenciesPairs/output"));
 
 		job.setMapperClass(RelativeFrequencyPairMapper.class);
-//		job.setCombinerClass(RelativeFrequencyPairReducer.class);
 		job.setReducerClass(RelativeFrequencyPairReducer.class);
 
-//		job.setOutputKeyClass(Pair.class);
-//		job.setOutputValueClass(IntWritable.class);
-		
 	    job.setMapOutputKeyClass((Pair.class));
         job.setMapOutputValueClass(IntWritable.class);
         
