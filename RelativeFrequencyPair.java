@@ -28,8 +28,8 @@ public class RelativeFrequencyPair {
 			// initiate
 			HashMap<Pair, Integer> H = new HashMap<Pair, Integer>();
 			String[] allTerms = value.toString().split(" ");
-			for(String tmpStr:allTerms)
-				System.out.println(tmpStr);
+//			for(String tmpStr:allTerms)
+//				System.out.println(tmpStr);
 
 			// map
 			for (int i = 0; i < allTerms.length; i++) 
@@ -73,32 +73,36 @@ public class RelativeFrequencyPair {
 
 	public static class RelativeFrequencyPairReducer extends
 			Reducer<Pair, IntWritable, Pair, DoubleWritable> {
-
+		
+		Integer marginal = 0;
+		
 		@Override
 		public void reduce(Pair pair, Iterable<IntWritable> values,
 				Context context) throws IOException, InterruptedException {
 			// initiate
-			int marginal = 0;
+			
 
 			// reduce
-			System.out.println(pair.toString());
-			for(IntWritable tmpInt:values)
-				System.out.println(tmpInt.get());
-			System.out.println(pair.toString());
+//			System.out.println(pair.toString());
+//			for(IntWritable tmpInt:values)
+//				System.out.println(tmpInt.get());
+			//System.out.println(pair.toString());
 			
 			
-			if (pair.getValue().equals("*")) {
-				marginal=0;
+
+			if (pair.getValue().toString().equals("*")) {
 				for(IntWritable x : values)
 					marginal+=x.get();
+				System.out.println(marginal);
 			} else {
-				int sum = 0;
-				Double relativeFrequency = 0.0;
+				double sum = 0;
+				double relativeFrequency = 0.0;
 				for (IntWritable x : values) {
 					sum += x.get();
 				}
-				relativeFrequency = (double) (sum / marginal);
-				System.out.println(relativeFrequency);
+				System.out.println(marginal);
+				relativeFrequency = sum / marginal;
+				//System.out.println(relativeFrequency);
 				DoubleWritable relativeFrequencyDoubleWritable = new DoubleWritable(relativeFrequency);
 				context.write(pair, relativeFrequencyDoubleWritable);
 			}
@@ -122,8 +126,14 @@ public class RelativeFrequencyPair {
 //		job.setCombinerClass(RelativeFrequencyPairReducer.class);
 		job.setReducerClass(RelativeFrequencyPairReducer.class);
 
-		job.setOutputKeyClass(Pair.class);
-		job.setOutputValueClass(IntWritable.class);
+//		job.setOutputKeyClass(Pair.class);
+//		job.setOutputValueClass(IntWritable.class);
+		
+	    job.setMapOutputKeyClass((Pair.class));
+        job.setMapOutputValueClass(IntWritable.class);
+        
+        job.setOutputKeyClass(Pair.class);
+        job.setOutputValueClass(DoubleWritable.class);
 
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}

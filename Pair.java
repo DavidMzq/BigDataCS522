@@ -11,7 +11,10 @@ public class Pair implements Writable, WritableComparable<Pair> {
 	Text  Key;
 	Text  value;
 
-    public Pair() {}
+    public Pair() {
+    	this.Key = new Text();
+        this.value = new Text();
+    }
 
     public Pair(String key, String value) {
 
