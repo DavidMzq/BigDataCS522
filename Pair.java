@@ -3,23 +3,23 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
 
 public class Pair implements Writable, WritableComparable<Pair> {
-    String Key;
-    String value;
+	Text  Key;
+	Text  value;
 
-    public Pair() {
-    }
+    public Pair() {}
 
     public Pair(String key, String value) {
 
-        this.Key = key;
-        this.value = value;
+    	this.Key = new Text(key);
+        this.value = new Text(value);
     }
 
-    public String getKey() {
+    public Text getKey() {
         return Key;
     }
 
@@ -28,7 +28,7 @@ public class Pair implements Writable, WritableComparable<Pair> {
 		return "Pair [Key=" + Key + ", value=" + value + "]";
 	}
 
-	public String getValue() {
+	public Text getValue() {
         return value;
     }
 
@@ -69,27 +69,24 @@ public class Pair implements Writable, WritableComparable<Pair> {
             return this.value.compareTo(pair.value);
     }
 
-    @Override
-    public void write(DataOutput out) throws IOException {
-        // TODO Auto-generated method stub
-        out.writeUTF(Key);
-        out.writeUTF(value);
-    }
+	 @Override
+	    public void write(DataOutput out) throws IOException {
+	        // TODO Auto-generated method stub
+	        Key.write(out);
+	        value.write(out);
+	    }
 
-    @Override
-    public void readFields(DataInput in) throws IOException {
-        // TODO Auto-generated method stub
-        Key = in.readUTF();
-        value = in.readUTF();
+	    @Override
+	    public void readFields(DataInput in) throws IOException {
+	        // TODO Auto-generated method stub
+	        Key.readFields(in);
+	        value.readFields(in);
+	    }
 
-    }
-
-    public static Pair read(DataInput in) throws IOException {
-        Pair w = new Pair();
-        w.readFields(in);
-        return w;
-
-    }
-
+	    public static Pair read(DataInput in) throws IOException {
+	        Pair w = new Pair();
+	        w.readFields(in);
+	        return w;
+	    }
 }
 

@@ -73,7 +73,6 @@ public class RelativeFrequencyPair {
 
 	public static class RelativeFrequencyPairReducer extends
 			Reducer<Pair, IntWritable, Pair, DoubleWritable> {
-		//private IntWritable result = new IntWritable();
 
 		@Override
 		public void reduce(Pair pair, Iterable<IntWritable> values,
@@ -86,6 +85,8 @@ public class RelativeFrequencyPair {
 			for(IntWritable tmpInt:values)
 				System.out.println(tmpInt.get());
 			System.out.println(pair.toString());
+			
+			
 			if (pair.getValue().equals("*")) {
 				marginal=0;
 				for(IntWritable x : values)
