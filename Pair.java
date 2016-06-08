@@ -62,7 +62,7 @@ public class Pair implements Writable, WritableComparable<Pair> {
 	@Override
     public int compareTo(Pair pair) {
         // TODO Auto-generated method stub
-    	if(this.value.equals("*"))
+    	if(this.value.toString().equals("*"))
     		return -1;
         if (this.Key.compareTo(pair.Key) > 0)
             return 1;

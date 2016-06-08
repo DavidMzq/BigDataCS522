@@ -1,4 +1,9 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,8 +33,6 @@ public class RelativeFrequencyPair {
 			// initiate
 			HashMap<Pair, Integer> H = new HashMap<Pair, Integer>();
 			String[] allTerms = value.toString().split(" ");
-//			for(String tmpStr:allTerms)
-//				System.out.println(tmpStr);
 
 			// map
 			for (int i = 0; i < allTerms.length; i++) 
@@ -65,7 +68,7 @@ public class RelativeFrequencyPair {
 			// close
 			for (Pair p : H.keySet()) {
 				IntWritable x = new IntWritable(H.get(p));
-				System.out.println(p.toString()+";"+x.toString());
+//				System.out.println(p.toString()+";"+x.toString());
 				context.write(p, x);
 			}
 		}
@@ -75,35 +78,25 @@ public class RelativeFrequencyPair {
 	public static class RelativeFrequencyPairReducer extends
 			Reducer<Pair, IntWritable, Pair, DoubleWritable> {
 		
+		// initiate
 		Integer marginal = 0;
 		
 		@Override
 		public void reduce(Pair pair, Iterable<IntWritable> values,
-				Context context) throws IOException, InterruptedException {
-			// initiate
-			
-
-			// reduce
-//			System.out.println(pair.toString());
-//			for(IntWritable tmpInt:values)
-//				System.out.println(tmpInt.get());
-			//System.out.println(pair.toString());
-			
-			
+				Context context) throws IOException, InterruptedException {	
 
 			if (pair.getValue().toString().equals("*")) {
 				for(IntWritable x : values)
 					marginal+=x.get();
-				System.out.println(marginal);
+				//System.out.println(marginal);
 			} else {
 				double sum = 0;
 				double relativeFrequency = 0.0;
 				for (IntWritable x : values) {
 					sum += x.get();
 				}
-				System.out.println(marginal);
+//				System.out.println(marginal);
 				relativeFrequency = sum / marginal;
-				//System.out.println(relativeFrequency);
 				DoubleWritable relativeFrequencyDoubleWritable = new DoubleWritable(relativeFrequency);
 				context.write(pair, relativeFrequencyDoubleWritable);
 			}
@@ -112,15 +105,17 @@ public class RelativeFrequencyPair {
 
 
 	public static void main(String[] args) throws Exception {
+		Runtime.getRuntime().exec("rm -rf /home/cloudera/workspace/RelativeFrequency/output");
+		
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf, "word count");
 
 		job.setJarByClass(RelativeFrequencyPair.class);
 
 		FileInputFormat.addInputPath(job, new Path(
-				"/home/cloudera/workspace/RelativeFrequenciesPairs/src.txt"));
+				"/home/cloudera/workspace/RelativeFrequency/src.txt"));
 		FileOutputFormat.setOutputPath(job, new Path(
-				"/home/cloudera/workspace/RelativeFrequenciesPairs/output"));
+				"/home/cloudera/workspace/RelativeFrequency/output"));
 
 		job.setMapperClass(RelativeFrequencyPairMapper.class);
 		job.setReducerClass(RelativeFrequencyPairReducer.class);
@@ -131,7 +126,34 @@ public class RelativeFrequencyPair {
         job.setOutputKeyClass(Pair.class);
         job.setOutputValueClass(DoubleWritable.class);
 
+       
+        
+        OutPut(job,"/home/cloudera/workspace/RelativeFrequencyPair/output/part-r-00000");
+        
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
 
+	
+	//Output the content of reduce output to console as well, thus don't need to open it to check
+	public static void OutPut(Job job,String fullFileName) throws ClassNotFoundException, FileNotFoundException, IOException, InterruptedException
+	{
+        if(job.waitForCompletion(true)){
+        File fileout=new File("/home/cloudera/workspace/RelativeFrequencyPair/output/part-r-00000");
+	        if(fileout.exists())
+	        {
+		        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileout)));
+		    	String data = null;
+		    	String sFileLines ="";
+		    	while((data = br.readLine())!=null)
+		    	{
+		        sFileLines=data; //
+		        sFileLines+="\r\n"; //
+		        System.out.println(sFileLines);
+	       }
+	       br.close();
+       }
+	}
+   
+	}
+	
 }
