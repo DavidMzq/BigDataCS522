@@ -1,4 +1,3 @@
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -8,37 +7,35 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
 
 public class Pair implements Writable, WritableComparable<Pair> {
-	Text  Key;
-	Text  value;
+	Text  Left;
+	Text  Right;
 
     public Pair() {
-    	this.Key = new Text();
-        this.value = new Text();
+    	this.Left = new Text();
+        this.Right = new Text();
     }
 
-    public Pair(String key, String value) {
-
-    	this.Key = new Text(key);
-        this.value = new Text(value);
+    public Pair(String left, String right) {
+    	this.Left = new Text(left);
+        this.Right = new Text(right);
     }
 
-    public Text getKey() {
-        return Key;
+    public Text getLeft() {
+        return Left;
     }
 
     @Override
 	public String toString() {
-		return "Pair [Key=" + Key + ", value=" + value + "]";
+		return "Pair (Left=" + Left + ", Right=" + Right + ")";
 	}
 
-	public Text getValue() {
-        return value;
+	public Text getRight() {
+        return Right;
     }
-
 
     @Override
 	public int hashCode() {
-		int result=17* Key.hashCode() +19*value.hashCode();
+		int result=17* Left.hashCode() +19*Right.hashCode();
 		return result;
 	}
 
@@ -52,7 +49,7 @@ public class Pair implements Writable, WritableComparable<Pair> {
 			return false;
 		Pair other = (Pair) obj;
 		
-		if(other.getKey().equals(Key)&&other.getValue().equals(value))
+		if(other.getLeft().equals(Left)&&other.getRight().equals(Right))
 			return true;
 		else
 			return false;
@@ -61,29 +58,33 @@ public class Pair implements Writable, WritableComparable<Pair> {
 
 	@Override
     public int compareTo(Pair pair) {
-        // TODO Auto-generated method stub
-    	if(this.value.toString().equals("*"))
-    		return -1;
-        if (this.Key.compareTo(pair.Key) > 0)
+		/*
+    	if(this.Right.toString().equals("*"))
+    		return 1;
+        if (this.Left.compareTo(pair.Left) > 0)
             return 1;
-        else if (this.Key.compareTo(pair.Key) < 0)
+        else if (this.Left.compareTo(pair.Left) < 0)
             return -1;
         else
-            return this.value.compareTo(pair.value);
+            return this.Right.compareTo(pair.Right);
+        */
+		if (this.Left.compareTo(pair.Left) > 0) return 1;
+        else if (this.Left.compareTo(pair.Left) < 0) return -1;
+		if(this.Right.toString().equals("*")) return -1;
+		return this.Right.compareTo(pair.Right);
+		
     }
 
 	 @Override
 	    public void write(DataOutput out) throws IOException {
-	        // TODO Auto-generated method stub
-	        Key.write(out);
-	        value.write(out);
+	        Left.write(out);
+	        Right.write(out);
 	    }
 
 	    @Override
 	    public void readFields(DataInput in) throws IOException {
-	        // TODO Auto-generated method stub
-	        Key.readFields(in);
-	        value.readFields(in);
+	        Left.readFields(in);
+	        Right.readFields(in);
 	    }
 
 	    public static Pair read(DataInput in) throws IOException {
@@ -92,4 +93,3 @@ public class Pair implements Writable, WritableComparable<Pair> {
 	        return w;
 	    }
 }
-
